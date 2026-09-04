@@ -77,13 +77,12 @@ export default function Home() {
 
   return <main>
     <header className="topbar">
-      <a className="brand" href="./" aria-label="Prog Snippet home"><span className="brand-mark">P</span><span>PROG SNIPPET</span></a>
+      <a className="brand" href="./" aria-label="Prog game"><span className="brand-mark">P</span><span>PROG GAYM</span></a>
       <button className="new-button" onClick={() => newRound()} disabled={!catalog.length}>New song <span aria-hidden="true">↗</span></button>
     </header>
     <section className="game-shell">
-      <div className="eyebrow">A progressive rock ear test</div>
-      <h1>Name that track.</h1>
-      <p className="lede">Six chances. The first clue is only a tenth of a second.</p>
+      <div className="eyebrow">how e is your prog ebk???</div>
+      <h1>Name this song! (why does it have 10/8 time signature and/or declare "glockenspiel" and/or have train noises and/or DIONYSUS!! and/or pvz but its hogweed yep yep and/or</h1>
       <div className="progress" aria-label={`Clue ${stage + 1} of ${STAGES.length}`}>
         {STAGES.map((seconds,index) => <div className={`progress-step ${index < stage ? "used" : ""} ${index === stage ? "active" : ""}`} key={seconds}><span>{seconds}s</span></div>)}
       </div>
