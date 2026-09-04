@@ -82,7 +82,8 @@ export default function Home() {
     </header>
     <section className="game-shell">
       <div className="eyebrow">how e is your prog ebk???</div>
-      <h1>Name this song! (why does it have 10/8 time signature and/or declare "glockenspiel" and/or have train noises and/or DIONYSUS!! and/or pvz but its hogweed yep yep and/or</h1>
+      <h1>Name this song!</h1>
+      <h6>(why does it have 10/8 time signature and/or declare "glockenspiel" and/or have train noises and/or DIONYSUS!! and/or pvz but its hogweed yep yep and/or</h6>
       <div className="progress" aria-label={`Clue ${stage + 1} of ${STAGES.length}`}>
         {STAGES.map((seconds,index) => <div className={`progress-step ${index < stage ? "used" : ""} ${index === stage ? "active" : ""}`} key={seconds}><span>{seconds}s</span></div>)}
       </div>
