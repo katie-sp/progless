@@ -30,3 +30,68 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.difficulty {
+  margin: 26px 0 30px;
+  padding: 0;
+  border: 0;
+}
+
+.difficulty legend {
+  margin-bottom: 9px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.mode-switch {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.mode-switch button {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 7px;
+  min-height: 48px;
+  padding: 10px 12px;
+  border: 1px solid var(--ink);
+  background: #faf8f2;
+  color: var(--ink);
+  cursor: pointer;
+  text-transform: capitalize;
+}
+
+.mode-switch button + button {
+  border-left: 0;
+}
+
+.mode-switch button.active {
+  background: var(--ink);
+  color: #fff;
+}
+
+.mode-switch button b {
+  font-size: 13px;
+}
+
+.mode-switch button span {
+  color: #77736a;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.mode-switch button.active span {
+  color: var(--acid);
+}
+
+@media (max-width: 480px) {
+  .mode-switch button {
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+}

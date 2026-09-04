@@ -2,14 +2,21 @@
 
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 
-type Song = { id:number; title:string; artist:string; album:string; preview:string; artwork:string; progarchives:string };
+type Song = { id:number; title:string; artist:string; album:string; rank:number; preview:string; artwork:string; progarchives:string };
+type Mode = "easy" | "medium" | "hard";
 const STAGES = [0.1, 0.5, 2, 4, 8, 15];
+const MODE_LIMITS:Record<Mode,number> = { easy:10, medium:25, hard:50 };
+const MODES:Mode[] = ["easy", "medium", "hard"];
 const normalize = (value:string) => value.toLocaleLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 const label = (song:Song) => `${song.title} — ${song.artist}`;
 
 export default function Home() {
   const [catalog, setCatalog] = useState<Song[]>([]);
   const [answer, setAnswer] = useState<Song | null>(null);
+  const [mode, setMode] = useState<Mode>(() => {
+    const saved = localStorage.getItem("prog-snippet-mode");
+    return saved === "easy" || saved === "hard" ? saved : "medium";
+  });
   const [stage, setStage] = useState(0);
   const [query, setQuery] = useState("");
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
@@ -21,12 +28,13 @@ export default function Home() {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
 
-  const newRound = (songs = catalog) => {
-    if (!songs.length) return;
+  const newRound = (songs = catalog, difficulty = mode) => {
+    const eligible = songs.filter((song) => song.rank <= MODE_LIMITS[difficulty]);
+    if (!eligible.length) return;
     if (timerRef.current) clearTimeout(timerRef.current);
     audioRef.current?.pause();
     const previous = Number(localStorage.getItem("prog-snippet-last"));
-    const pool = songs.length > 1 ? songs.filter((song) => song.id !== previous) : songs;
+    const pool = eligible.length > 1 ? eligible.filter((song) => song.id !== previous) : eligible;
     const next = pool[Math.floor(Math.random() * pool.length)];
     localStorage.setItem("prog-snippet-last", String(next.id));
     setAnswer(next); setStage(0); setQuery(""); setSuggestionsOpen(false); setActiveSuggestion(-1); setHistory([]); setResult("playing"); setAudioState("idle");
@@ -40,17 +48,29 @@ export default function Home() {
   }, []);
   useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current); }, []);
 
+  const eligibleCatalog = useMemo(
+    () => catalog.filter((song) => song.rank <= MODE_LIMITS[mode]),
+    [catalog, mode],
+  );
+
+  const changeMode = (nextMode:Mode) => {
+    if (nextMode === mode) return;
+    setMode(nextMode);
+    localStorage.setItem("prog-snippet-mode", nextMode);
+    newRound(catalog, nextMode);
+  };
+
   const suggestions = useMemo(() => {
     const needle = normalize(query);
     if (needle.length < 2) return [];
     const seen = new Set<string>();
-    return catalog.filter((song) => {
+    return eligibleCatalog.filter((song) => {
       const key = normalize(label(song));
       if (!key.includes(needle) || seen.has(key)) return false;
       seen.add(key);
       return true;
     });
-  }, [catalog, query]);
+  }, [eligibleCatalog, query]);
 
   useEffect(() => {
     if (activeSuggestion < 0) return;
@@ -101,7 +121,7 @@ export default function Home() {
   const submitGuess = (event:FormEvent) => {
     event.preventDefault();
     if (!answer || !query.trim() || result !== "playing") return;
-    const chosen = catalog.find((song) => normalize(label(song)) === normalize(query));
+    const chosen = eligibleCatalog.find((song) => normalize(label(song)) === normalize(query));
     if (chosen && normalize(label(chosen)) === normalize(label(answer))) { stopAudio(); setHistory((items) => [...items, `Correct: ${label(answer)}`]); setResult("won"); }
     else advance(query.trim());
   };
@@ -116,6 +136,12 @@ export default function Home() {
       <div className="eyebrow">how e is your prog ebk???</div>
       <h1>Name this song!</h1>
       <h6>(why does it have 10/8 time signature and/or declare "glockenspiel" and/or have train noises and/or DIONYSUS!! and/or pvz but its hogweed yep yep and/or</h6>
+      <fieldset className="difficulty">
+        <legend>Album pool</legend>
+        <div className="mode-switch">
+          {MODES.map((option) => <button type="button" key={option} className={mode === option ? "active" : ""} aria-pressed={mode === option} onClick={() => changeMode(option)}><b>{option}</b><span>Top {MODE_LIMITS[option]}</span></button>)}
+        </div>
+      </fieldset>
       <div className="progress" aria-label={`Clue ${stage + 1} of ${STAGES.length}`}>
         {STAGES.map((seconds,index) => <div className={`progress-step ${index < stage ? "used" : ""} ${index === stage ? "active" : ""}`} key={seconds}><span>{seconds}s</span></div>)}
       </div>
@@ -135,6 +161,6 @@ export default function Home() {
       <div className="actions">{result === "playing" ? <><button onClick={() => advance("Skipped")}>{stage < STAGES.length - 1 ? `Skip to ${STAGES[stage + 1]}s` : "Use final skip"}</button><button onClick={reveal}>Give up</button></> : <button className="again" onClick={() => newRound()}>Play another song</button>}</div>
       <audio ref={audioRef} src={answer?.preview} preload="auto" onEnded={() => setAudioState("idle")} />
     </section>
-    <footer><p><b>{catalog.length.toLocaleString()}</b> previewable tracks from the <a href="https://www.progarchives.com/top-prog-albums.asp?salbumtypes=1&smaxresults=50" target="_blank" rel="noreferrer">ProgArchives top 50 albums</a>.</p><p>Audio previews and artwork provided by Apple. Fan-made and unaffiliated.</p></footer>
+    <footer><p><b>{eligibleCatalog.length.toLocaleString()}</b> tracks in {mode} mode · <a href="https://www.progarchives.com/top-prog-albums.asp?salbumtypes=1&smaxresults=50" target="_blank" rel="noreferrer">ProgArchives top {MODE_LIMITS[mode]} albums</a>.</p><p>Audio previews and artwork provided by Apple. Fan-made and unaffiliated.</p></footer>
   </main>;
 }

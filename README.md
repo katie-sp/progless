@@ -1,5 +1,5 @@
 # play at [https://katie-sp.github.io/progless/](https://katie-sp.github.io/progless/)
-A Songless-style game for prog; each round picks a random track and gives you escalating clips of 0.1, 1, 3, 5, 10, and 15 seconds.
+A Songless-style game for prog with Easy (top 10 albums), Medium (top 25), and Hard (top 50) modes. Each round gives you escalating clips of 0.1, 0.5, 2, 4, 8, and 15 seconds.
 
 The included catalog is scoped to the current [ProgArchives top 50 studio albums](https://www.progarchives.com/top-prog-albums.asp?salbumtypes=1&smaxresults=50). ProgArchives supplies the album ranking; Apple supplies the playable preview clips and cover art.
 
