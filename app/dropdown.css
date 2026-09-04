@@ -1,0 +1,32 @@
+.suggestions {
+  max-height: min(340px, 55vh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: var(--ink) #dedbd2;
+  scrollbar-width: thin;
+}
+
+.suggestions-meta {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 8px 13px;
+  border-bottom: 1px solid var(--line);
+  background: #dedbd2;
+  color: #68655e;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.suggestions button.active {
+  background: var(--acid);
+}
+
+.suggestions b,
+.suggestions span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

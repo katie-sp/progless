@@ -12,11 +12,14 @@ export default function Home() {
   const [answer, setAnswer] = useState<Song | null>(null);
   const [stage, setStage] = useState(0);
   const [query, setQuery] = useState("");
+  const [suggestionsOpen, setSuggestionsOpen] = useState(false);
+  const [activeSuggestion, setActiveSuggestion] = useState(-1);
   const [history, setHistory] = useState<string[]>([]);
   const [result, setResult] = useState<"playing"|"won"|"lost">("playing");
   const [audioState, setAudioState] = useState<"idle"|"playing"|"error">("idle");
   const audioRef = useRef<HTMLAudioElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
 
   const newRound = (songs = catalog) => {
     if (!songs.length) return;
@@ -26,7 +29,7 @@ export default function Home() {
     const pool = songs.length > 1 ? songs.filter((song) => song.id !== previous) : songs;
     const next = pool[Math.floor(Math.random() * pool.length)];
     localStorage.setItem("prog-snippet-last", String(next.id));
-    setAnswer(next); setStage(0); setQuery(""); setHistory([]); setResult("playing"); setAudioState("idle");
+    setAnswer(next); setStage(0); setQuery(""); setSuggestionsOpen(false); setActiveSuggestion(-1); setHistory([]); setResult("playing"); setAudioState("idle");
   };
 
   useEffect(() => {
@@ -46,8 +49,37 @@ export default function Home() {
       if (!key.includes(needle) || seen.has(key)) return false;
       seen.add(key);
       return true;
-    }).slice(0, 7);
+    });
   }, [catalog, query]);
+
+  useEffect(() => {
+    if (activeSuggestion < 0) return;
+    suggestionsRef.current?.querySelector<HTMLElement>(`#guess-option-${activeSuggestion}`)?.scrollIntoView({ block: "nearest" });
+  }, [activeSuggestion]);
+
+  const selectSuggestion = (song:Song) => {
+    setQuery(label(song));
+    setSuggestionsOpen(false);
+    setActiveSuggestion(-1);
+  };
+
+  const handleGuessKeyDown = (event:React.KeyboardEvent<HTMLInputElement>) => {
+    if (!suggestionsOpen || !suggestions.length) return;
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      setActiveSuggestion((index) => Math.min(index + 1, suggestions.length - 1));
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      setActiveSuggestion((index) => Math.max(index - 1, 0));
+    } else if (event.key === "Enter" && activeSuggestion >= 0) {
+      event.preventDefault();
+      selectSuggestion(suggestions[activeSuggestion]);
+    } else if (event.key === "Escape") {
+      event.preventDefault();
+      setSuggestionsOpen(false);
+      setActiveSuggestion(-1);
+    }
+  };
 
   const stopAudio = () => {
     if (timerRef.current) clearTimeout(timerRef.current);
@@ -64,7 +96,7 @@ export default function Home() {
   const advance = (entry:string) => {
     stopAudio(); setHistory((items) => [...items, entry]);
     if (stage === STAGES.length - 1) setResult("lost"); else setStage((value) => value + 1);
-    setQuery("");
+    setQuery(""); setSuggestionsOpen(false); setActiveSuggestion(-1);
   };
   const submitGuess = (event:FormEvent) => {
     event.preventDefault();
@@ -95,8 +127,8 @@ export default function Home() {
       {history.length > 0 && <ol className="history" aria-label="Previous guesses">{history.map((item,index) => <li key={`${item}-${index}`}><span>{String(index + 1).padStart(2,"0")}</span>{item}</li>)}</ol>}
       {result === "playing" ? <form onSubmit={submitGuess} className="guess-form">
         <label htmlFor="guess">Your guess</label>
-        <div className="input-wrap"><input id="guess" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search song or artist…" autoComplete="off" />
-          {suggestions.length > 0 && <div className="suggestions">{suggestions.map((song) => <button type="button" key={song.id} onClick={() => setQuery(label(song))}><b>{song.title}</b><span>{song.artist}</span></button>)}</div>}
+        <div className="input-wrap"><input id="guess" value={query} onChange={(event) => { setQuery(event.target.value); setSuggestionsOpen(true); setActiveSuggestion(-1); }} onFocus={() => setSuggestionsOpen(true)} onKeyDown={handleGuessKeyDown} placeholder="Search song or artist…" autoComplete="off" role="combobox" aria-autocomplete="list" aria-expanded={suggestionsOpen && suggestions.length > 0} aria-controls="guess-options" aria-activedescendant={activeSuggestion >= 0 ? `guess-option-${activeSuggestion}` : undefined} />
+          {suggestionsOpen && suggestions.length > 0 && <div className="suggestions" id="guess-options" role="listbox" ref={suggestionsRef}><div className="suggestions-meta">{suggestions.length} match{suggestions.length === 1 ? "" : "es"}</div>{suggestions.map((song,index) => <button type="button" role="option" aria-selected={index === activeSuggestion} id={`guess-option-${index}`} className={index === activeSuggestion ? "active" : ""} key={song.id} onClick={() => selectSuggestion(song)}><b>{song.title}</b><span>{song.artist}</span></button>)}</div>}
         </div>
         <button className="submit-button" type="submit" disabled={!query.trim()}>Guess</button>
       </form> : answer ? <div className="answer-card"><img src={answer.artwork} alt="" /><div><span>{result === "won" ? "You got it" : "The answer was"}</span><h2>{answer.title}</h2><p>{answer.artist} · {answer.album}</p></div><a href={answer.progarchives} target="_blank" rel="noreferrer">Find on ProgArchives ↗</a></div> : null}
