@@ -1,7 +1,5 @@
 # play at [https://katie-sp.github.io/progless/](https://katie-sp.github.io/progless/)
-# prog guessing game 
-
-A Songless-style game for prog. Each round picks a random track and gives you escalating clips of **0.1, 1, 3, 5, 10, and 15 seconds**.
+A Songless-style game for prog; each round picks a random track and gives you escalating clips of 0.1, 1, 3, 5, 10, and 15 seconds.
 
 The included catalog is scoped to the current [ProgArchives top 50 studio albums](https://www.progarchives.com/top-prog-albums.asp?salbumtypes=1&smaxresults=50). ProgArchives supplies the album ranking; Apple supplies the playable preview clips and cover art.
 
