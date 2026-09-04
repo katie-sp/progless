@@ -77,7 +77,7 @@ export default function Home() {
 
   return <main>
     <header className="topbar">
-      <a className="brand" href="./" aria-label="Prog game"><span className="brand-mark">P</span><span>PROG GAYM</span></a>
+      <a className="brand" href="./" aria-label="Prog game"><span className="brand-mark">P</span><span>PROG!!!!!!!!!!!!</span></a>
       <button className="new-button" onClick={() => newRound()} disabled={!catalog.length}>New song <span aria-hidden="true">↗</span></button>
     </header>
     <section className="game-shell">
