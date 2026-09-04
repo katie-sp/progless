@@ -1,6 +1,8 @@
 # play at [https://katie-sp.github.io/progless/](https://katie-sp.github.io/progless/)
 A Songless-style game for prog with Easy (top 10 albums), Medium (top 25), and Hard (top 50) modes. Each round gives you escalating clips of 0.1, 0.5, 2, 4, 8, and 15 seconds.
 
+Browser-local statistics track games played, songs solved, win rate, average winning move, streaks, and the six-move win distribution. Challenge mode creates a shareable five-song set: friends opening its link receive the same songs and difficulty, and the final spoiler-free score can be copied and shared.
+
 The included catalog is scoped to the current [ProgArchives top 50 studio albums](https://www.progarchives.com/top-prog-albums.asp?salbumtypes=1&smaxresults=50). ProgArchives supplies the album ranking; Apple supplies the playable preview clips and cover art.
 
 ## Notes
