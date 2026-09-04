@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "scripts": { "dev": "vite", "build": "tsc --noEmit && vite build", "preview": "vite preview", "catalog": "node scripts/generate-catalog.mjs" },
+  "scripts": { "dev": "vite", "build": "tsc --noEmit && vite build", "preview": "vite preview", "albums": "node scripts/scrape-top-albums.mjs", "catalog": "node scripts/generate-catalog.mjs", "catalog:refresh": "npm run albums && npm run catalog" },
   "dependencies": { "@vitejs/plugin-react": "4.3.4", "vite": "6.1.0", "typescript": "5.7.3", "react": "19.0.0", "react-dom": "19.0.0", "@types/react": "19.0.8", "@types/react-dom": "19.0.3" },
   "devDependencies": {}
 }

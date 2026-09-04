@@ -102,6 +102,6 @@ export default function Home() {
       <div className="actions">{result === "playing" ? <><button onClick={() => advance("Skipped")}>{stage < STAGES.length - 1 ? `Skip to ${STAGES[stage + 1]}s` : "Use final skip"}</button><button onClick={reveal}>Give up</button></> : <button className="again" onClick={() => newRound()}>Play another song</button>}</div>
       <audio ref={audioRef} src={answer?.preview} preload="auto" onEnded={() => setAudioState("idle")} />
     </section>
-    <footer><p><b>{catalog.length.toLocaleString()}</b> previewable tracks from artists catalogued by <a href="https://www.progarchives.com/" target="_blank" rel="noreferrer">ProgArchives</a>.</p><p>Audio previews and artwork provided by Apple. Fan-made and unaffiliated.</p></footer>
+    <footer><p><b>{catalog.length.toLocaleString()}</b> previewable tracks from the <a href="https://www.progarchives.com/top-prog-albums.asp?salbumtypes=1&smaxresults=50" target="_blank" rel="noreferrer">ProgArchives top 50 albums</a>.</p><p>Audio previews and artwork provided by Apple. Fan-made and unaffiliated.</p></footer>
   </main>;
 }

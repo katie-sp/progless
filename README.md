@@ -2,7 +2,7 @@
 
 A tiny, replayable Songless-style game for progressive rock. Each round picks a random track and gives you escalating clips of **0.1, 1, 3, 5, 10, and 15 seconds**.
 
-The included catalog contains 11,000+ playable previews from 100+ artists catalogued by [ProgArchives](https://www.progarchives.com/). ProgArchives is used as the scope/reference; Apple supplies the legal preview clips and cover art. This project is fan-made and unaffiliated with either service.
+The included catalog is scoped to the current [ProgArchives top 50 studio albums](https://www.progarchives.com/top-prog-albums.asp?salbumtypes=1&smaxresults=50). ProgArchives supplies the album ranking; Apple supplies the playable preview clips and cover art. This project is fan-made and unaffiliated with either service.
 
 ## Run locally
 
@@ -22,18 +22,27 @@ npm run dev
 
 No server, API key, or paid account is required.
 
-## Refresh or expand the catalog
+## Refresh the top-50 catalog
 
-Edit `data/prog-artists.json`, keeping only artists represented on ProgArchives, then run:
+Run both catalog stages with:
 
 ```bash
-npm run catalog
+npm run catalog:refresh
 ```
 
-The generator asks Apple's Search API for currently playable previews and rewrites `public/catalog.json`. Commit the new file and GitHub Pages will redeploy it.
+The first stage tries to refresh `data/prog-albums.json` from ProgArchives. If ProgArchives rejects automated access, the script safely keeps the checked-in top-50 fallback. The second stage finds each album through Apple's Search API, downloads only that album's track metadata, and rewrites `public/catalog.json`.
+
+You can also run the stages independently:
+
+```bash
+npm run albums   # refresh data/prog-albums.json
+npm run catalog  # regenerate public/catalog.json from that album list
+```
+
+Commit the regenerated files and GitHub Pages will redeploy them.
 
 ## Notes
 
 - Preview availability can change by country or over time. If a clip fails, use **New song**.
-- The catalog generator deliberately uses a curated ProgArchives artist list because ProgArchives blocks automated bulk scraping.
+- ProgArchives sometimes blocks automated requests, which is why `data/prog-albums.json` is committed as a reliable fallback.
 - The production build uses relative asset paths, so it works at `username.github.io/repository-name/` as well as a custom domain.
