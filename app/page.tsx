@@ -3,7 +3,7 @@
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 
 type Song = { id:number; title:string; artist:string; album:string; preview:string; artwork:string; progarchives:string };
-const STAGES = [0.1, 1, 3, 5, 10, 15];
+const STAGES = [0.1, 0.5, 2, 4, 8, 15];
 const normalize = (value:string) => value.toLocaleLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 const label = (song:Song) => `${song.title} — ${song.artist}`;
 
